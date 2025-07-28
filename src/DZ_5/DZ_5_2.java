@@ -24,7 +24,7 @@ public class DZ_5_2 {
         } else {
             for (int i = 0; i <= inpt.length() - 5; i++) {
                 //System.out.println(inpt.length() - 4);
-                if (inpt.substring(ind1, ind2).equalsIgnoreCase(">>-->") || inpt.substring(ind1, ind2).equals("<--<<")) {
+                if (inpt.substring(ind1, ind2).equals(">>-->") || inpt.substring(ind1, ind2).equals("<--<<")) {
                     s += 1;
                     //System.out.println(inpt.substring(ind1, ind2));
                 }
