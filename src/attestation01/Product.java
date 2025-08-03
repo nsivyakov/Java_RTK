@@ -12,7 +12,7 @@ public class Product {
 
     public void setTitle(String title) {
 
-        if (title.trim().length() == 0) {
+        if (title.trim().isEmpty()) {
             throw new IllegalArgumentException("Поле Продукт не может быть пустым");
         } else {
             this.title = title;
@@ -26,10 +26,30 @@ public class Product {
             this.cost = cost;
         }
     }
+    public String getTitle() {
+        return title;
+    }
+
+    public double getCost() {
+        return cost;
+    }
 
     @Override
     public String toString() {
         return "Продукт: " + "наименование = " + title + ", цена = " + cost + ".";
 
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Product)) return false;
+        Product other = (Product) obj;
+        return title.equals(other.title) && Integer.compare(cost, other.cost) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = title.hashCode();
+        return result;
     }
 }
