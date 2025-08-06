@@ -1,5 +1,5 @@
 package attestation01;
-
+// Класс Покупатели
 import java.util.ArrayList;
 import java.util.List;
 

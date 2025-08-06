@@ -1,5 +1,5 @@
 package attestation01;
-
+// Класс продукты
 public class Product {
     private String title;
     private int cost;
