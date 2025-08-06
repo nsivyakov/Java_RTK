@@ -16,8 +16,8 @@ public class Person {
 
     public void setName(String name) {
 
-        if (name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Поле Имя не может быть пустым");
+        if (name.trim().isEmpty() || name.length()<3) {
+            throw new IllegalArgumentException("Поле Имя не может быть пустым и менее 3-ч символов");
         } else {
             this.name = name;
         }

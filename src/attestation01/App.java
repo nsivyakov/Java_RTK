@@ -1,128 +1,116 @@
 package attestation01;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class App {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        List<Person> people = new ArrayList<>();
-        List<Product> products = new ArrayList<>();
+        Map<String, Person> persons = new HashMap<>();
+        Map<String, Product> products = new HashMap<>();
+        // Карта покупок: ключ - покупатель, значение - список купленных продуктов
+        Map<Person, List<Product>> purchasesMap = new HashMap<>();
 
-        System.out.println("Введите покупателей:");
         // Ввод покупателей
-        while (true) {
-            String line = scanner.nextLine().trim();
-            if (line.equalsIgnoreCase("END")) {
-                break;
-            }
-            String[] parts = line.split(";");
+        System.out.println("Введите данные покупателей, продукты и покупки.");
+        System.out.println("Введите пустую строку или END для завершения.");
+        System.out.println("Введите покупателей:");
+        String line1 = scanner.nextLine().trim();
+        String[] entries1 = line1.split(";");
+        for (String entry : entries1) {
+            String[] parts = entry.split("=");
+            if (parts.length != 2) continue;
+            String name = parts[0].trim();
+            String moneyStr = parts[1].trim();
 
-            //String personPart = parts[0].trim();
-            //String moneyPart = parts[1].trim();
+            Integer cash = Integer.valueOf(moneyStr);
+            Person person = new Person(name, cash);
+            persons.put(name, person);
 
-            for (String entry : parts) {
-                // Удаляем лишние пробелы вокруг
-                entry = entry.trim();
+        }
+        // Ввод продуктов
+        System.out.println("Введите продукты:");
 
-                // Шаг 2: Разделить по '='
-                String[] part = entry.split("=");
-                if (parts.length == 1) {
-                    System.out.println("Некорректный формат: " + entry);
-                    continue; // пропускаем неправильные строки
-                }
-                String personPart = part[0].trim();
-                String moneyPart = part[1].trim();
-                System.out.println(personPart + "  " + moneyPart);
-                try {
-                    // Вводим имя
-                    //String[] nameParts = personPart.split("\\s+");
-                    //String name = nameParts[nameParts.length - 2] + " " + nameParts[nameParts.length - 1]; // например для "Павел Андреевич"
-                    // Лучше взять весь first part как имя, если оно состоит из нескольких слов, например, "Павел Андреевич"
-                    // Тогда проще: считать имя как весь personPart
-                    //String fullName = personPart;
+        String line2 = scanner.nextLine().trim();
+        String[] entries2 = line2.split(";");
+        for (String entry : entries2) {
+            String[] parts = entry.split("=");
+            if (parts.length != 2) continue;
+            String title = parts[0].trim();
+            String priceStr = parts[1].trim();
 
-                    if (personPart.trim().isEmpty()) {
-                        System.out.println("Имя не может быть пустым");
-                        continue;
-                    }
-                    if (personPart.trim().length() < 3) {
-                        System.out.println("Имя не может быть короче 3 символов");
-                        continue;
-                    }
-
-                    Integer amount = Integer.valueOf(moneyPart);
-                    if (amount < 0) {
-                        System.out.println("Деньги не могут быть отрицательными");
-                        continue;
-                    }
-                    Person p = new Person(personPart, amount);
-                    people.add(p);
-                    System.out.println(people);
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
-            }
+            Integer cost = Integer.valueOf(priceStr);
+            Product product = new Product(title, cost);
+            products.put(title, product);
         }
 
-
-        System.out.println("Введите продукты:");
-        // Ввод продуктов
         while (true) {
+            System.out.print("Введите покупки:");
             String line = scanner.nextLine().trim();
-            if (line.equalsIgnoreCase("END")) {
-                break;
-            }
-            String[] parts = line.split("=");
+            if (line.equalsIgnoreCase("END")) break;
+
+            String[] parts = line.split("-");
             if (parts.length != 2) {
-                System.out.println("Некорректный формат. Используйте: Название, Цена");
+                System.out.println("Некорректный формат ввода, повторите.");
                 continue;
             }
-            String productName = parts[0].trim();
-            String priceStr = parts[1].trim();
-            try {
-                if (productName.isEmpty()) {
-                    System.out.println("Название продукта не может быть пустым");
-                    continue;
-                }
-                Integer price = Integer.valueOf(priceStr);
-                if (price < 0) {
-                    System.out.println("Стоимость не может быть отрицательной");
-                    continue;
-                }
-                Product product = new Product(productName, price);
-                products.add(product);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        }
 
-        // Обработка покупок
-        System.out.println("Начинаем процесс покупок:");
-        for (
-                Person person : people) {
-            boolean purchasedAny = false;
-            // Перебираем продукты
-            for (Product product : new ArrayList<>(products)) {
+            String personName = parts[0].trim();
+            String productName = parts[1].trim();
+
+            Person person = persons.get(personName);
+            Product product = products.get(productName);
+
+            if (person == null) {
+                System.out.println("Пользователь не найден: " + personName);
+                continue;
+            }
+
+            if (product == null) {
+                System.out.println("Продукт не найден: " + productName);
+                continue;
+            }
+
+            // Попытка покупки
+            if (person.getCash() >= product.getCost()) {
                 boolean bought = person.buyProduct(product);
                 if (bought) {
+                    if (purchasesMap.containsKey(person)) {
+                        // если покупатель уже есть, добавляем продукт в его список
+                        List<Product> productsList = purchasesMap.get(person);
+                        productsList.add(product);
+                    } else {
+                        // если его еще нет, создаем новый список и сохраняем
+                        List<Product> newList = new ArrayList<>();
+                        newList.add(product);
+                        purchasesMap.put(person, newList);
+                    }
                     System.out.println(person.getName() + " купил " + product.getTitle());
-                    purchasedAny = true;
-                } else {
-                    System.out.println(person.getName() + " не может позволить себе " + product.getTitle());
                 }
+            } else {
+                System.out.println(personName + " не может позволить себе " + productName);
             }
-            if (!purchasedAny) {
-                System.out.println(person.getName() + " - Ничего не куплено");
-            }
+
         }
 
-        // Вывод итогов
-        System.out.println("Итоговые покупки:");
-        for (
-                Person person : people) {
-            System.out.println(person.toString());
+
+        /* Вариант 1 Итоговый вывод покупок по каждому покупателю
+       /* System.out.println("\nИтоговые покупки:");
+        for (Person person : persons.values()) {
+            List<Product> boughtProducts = purchasesMap.get(person);
+            if (boughtProducts == null || boughtProducts.isEmpty()) {
+                System.out.println(person.getName() + " ничего не купил");
+            } else {
+                System.out.println(person.getName() + " купил - ");
+                for (Product p : boughtProducts) {
+                    System.out.print("" + p.getTitle() + ", ");
+                }
+                System.out.println("Остаток денег: " + person.getCash() + "\n");
+            }
+        } */
+        // Вариант 2 с метеодом
+        for (String person : persons.keySet()) {
+
+            System.out.println(persons.get(person));
         }
         scanner.close();
     }
