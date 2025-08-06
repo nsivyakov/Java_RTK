@@ -107,7 +107,7 @@ public class App {
                 System.out.println("Остаток денег: " + person.getCash() + "\n");
             }
         } */
-        // Вариант 2 с метеодом
+        // Вариант 2 с методом
         for (String person : persons.keySet()) {
 
             System.out.println(persons.get(person));
