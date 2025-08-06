@@ -46,7 +46,7 @@ public class App {
         while (true) {
             System.out.print("Введите покупки:");
             String line = scanner.nextLine().trim();
-            if (line.equalsIgnoreCase("END")) break;
+            if (line.equalsIgnoreCase("END") || line.isEmpty()) break;
 
             String[] parts = line.split("-");
             if (parts.length != 2) {
