@@ -1,5 +1,5 @@
 package attestation01;
-
+// Приложение
 import java.util.*;
 
 public class App {
