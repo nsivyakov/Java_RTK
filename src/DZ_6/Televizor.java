@@ -8,7 +8,7 @@ public class Televizor {
     private String name;
     private int cost;
     private int size;
-    private boolean stateisOn;
+    private boolean stateis;
     private List<TV_Channel> channels;
     private TV_Channel curchan;
 
@@ -16,7 +16,7 @@ public class Televizor {
         this.name = name;
         this.cost = cost;
         this.size = size;
-        this.stateisOn = false;
+        this.stateis = false;
         this.channels = new ArrayList<>();
         this.curchan = curchan;
     }
@@ -44,15 +44,16 @@ public class Televizor {
     public void setSize(int size) {
         this.size = size;
     }
-
+    // Добавление каналов
     public void addChannel(TV_Channel channel) {
         channels.add(channel);
     }
-
+    // Установка текущего канала
     public void setCurchan(TV_Channel curchan) {
         this.curchan = curchan;
     }
-
+    public TV_Channel getCurchan(){return curchan;}
+    // Переключение каналов
     public void switching() {
         int t = channels.indexOf(curchan);
         int s = channels.size();
@@ -65,7 +66,31 @@ public class Televizor {
 
     @Override
     public String toString() {
-        return " Телевизор - " + name + ", цена - " + cost + (stateisOn ? "включён" : "выключен") + "Каналы" + channels + "Текущий канал: " + curchan + ".";
+        return " Телевизор - " + name + ", цена - " + cost +", состояние - "+ (stateis ? "включён" : "выключен")
+                + ". Каналы" + channels + "Текущий канал: " + curchan + ".";
+    }
+    // Методы для изменения состояния (включение/выключение)
+    public void turnOn() {
+        if (!stateis) {
+            stateis = true;
+            System.out.println(name + ": включен");
+        } else {
+            System.out.println(name + ": уже включен");
+        }
+    }
+
+    public void turnOff() {
+        if (stateis) {
+            stateis = false;
+            System.out.println(name + ": выключен");
+        } else {
+            System.out.println(name + ": уже выключен");
+        }
+    }
+
+    // Получение текущего статуса телевизора
+    public String getStateis() {
+        return ("Телевизор "+name+" "+(stateis ? "включён" : "выключен"));
     }
 
     @Override
