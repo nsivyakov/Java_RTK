@@ -37,27 +37,27 @@ public class SaveLoad {
         try (BufferedReader r = Files.newBufferedReader(SAVE)) {
             Map<String, String> map = new HashMap<>();
             for (String line; (line = r.readLine()) != null; ) {
-                String[] parts = line.split(";", 2);
-                if (parts.length == 2) map.put(parts[0], parts[1]);
-            }
-            Player p = s.getPlayer();
-            String[] pp = map.getOrDefault("player", "player;Hero;10;3").split(";");
-            p.setName(pp[1]);
-            p.setHp(Integer.parseInt(pp[2]));
-            p.setAttack(Integer.parseInt(pp[3]));
-            p.getInventory().clear();
-            String inv = map.getOrDefault("inventory", "");
-            if (!inv.isBlank()) for (String tok : inv.split(",")) {
-                String[] t = tok.split(":", 2);
-                if (t.length < 2) continue;
-                switch (t[0]) {
-                    case "Potion" -> p.getInventory().add(new Potion(t[1], 5));
-                    case "Key" -> p.getInventory().add(new Key(t[1]));
-                    case "Weapon" -> p.getInventory().add(new Weapon(t[1], 3));
-                    default -> {
+                String[] parts =line.strip().split(";", 2);
+                if (parts.length == 2) map.put(parts[0], parts[1]);}
+                Player p = s.getPlayer();
+                String[] pp = map.getOrDefault("player", "Hero;10;3").split(";");
+                p.setName(pp[0]);
+                p.setHp(Integer.parseInt(pp[1]));
+                p.setAttack(Integer.parseInt(pp[2]));
+                p.getInventory().clear();
+                String inv = map.getOrDefault("inventory", "");
+                if (!inv.isBlank()) for (String tok : inv.split(",")) {
+                    String[] t = tok.split(":", 2);
+                    if (t.length < 2) continue;
+                    switch (t[0]) {
+                        case "Potion" -> p.getInventory().add(new Potion(t[1], 5));
+                        case "Key" -> p.getInventory().add(new Key(t[1]));
+                        case "Weapon" -> p.getInventory().add(new Weapon(t[1], 3));
+                        default -> {
+                        }
                     }
                 }
-            }
+
             System.out.println("Игра загружена (упрощённо).");
         } catch (IOException e) {
             throw new UncheckedIOException("Не удалось загрузить игру", e);
