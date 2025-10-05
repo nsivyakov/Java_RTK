@@ -1,0 +1,65 @@
+-- Создание таблицы order_status (справочник статусов заказов)
+CREATE TABLE IF NOT EXISTS order_status (
+    id SERIAL PRIMARY KEY,
+    status_name VARCHAR(50) NOT NULL
+);
+
+COMMENT ON TABLE order_status IS 'Справочник статусов заказов';
+COMMENT ON COLUMN order_status.id IS 'Идентификатор статуса';
+COMMENT ON COLUMN order_status.status_name IS 'Название статуса заказа';
+
+-- Создание таблицы product (продукты)
+CREATE TABLE IF NOT EXISTS product (
+    id SERIAL PRIMARY KEY,
+    description TEXT NOT NULL,
+    price NUMERIC(10, 2) CHECK (price >= 0),
+    quantity INT CHECK (quantity >= 0),
+    category VARCHAR(100) NOT NULL
+);
+
+COMMENT ON TABLE product IS 'Таблица продуктов';
+COMMENT ON COLUMN product.id IS 'Идентификатор продукта';
+COMMENT ON COLUMN product.description IS 'Описание продукта';
+COMMENT ON COLUMN product.price IS 'Стоимость продукта';
+COMMENT ON COLUMN product.quantity IS 'Количество продукта на складе';
+COMMENT ON COLUMN product.category IS 'Категория продукта';
+
+-- Создание таблицы customer (клиенты)
+CREATE TABLE IF NOT EXISTS customer (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    phone VARCHAR(20) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE
+);
+
+COMMENT ON TABLE customer IS 'Таблица клиентов';
+COMMENT ON COLUMN customer.id IS 'Идентификатор клиента';
+COMMENT ON COLUMN customer.first_name IS 'Имя клиента';
+COMMENT ON COLUMN customer.last_name IS 'Фамилия клиента';
+COMMENT ON COLUMN customer.phone IS 'Телефон клиента';
+COMMENT ON COLUMN customer.email IS 'Email клиента';
+
+-- Создание таблицы order (заказы)
+CREATE TABLE IF NOT EXISTS "order" (
+    id SERIAL PRIMARY KEY,
+    product_id INT NOT NULL REFERENCES product(id),
+    customer_id INT NOT NULL REFERENCES customer(id),
+    order_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    quantity INT CHECK (quantity > 0),
+    status_id INT NOT NULL REFERENCES order_status(id)
+);
+
+COMMENT ON TABLE "order" IS 'Таблица заказов';
+COMMENT ON COLUMN "order".id IS 'Идентификатор заказа';
+COMMENT ON COLUMN "order".product_id IS 'Идентификатор продукта';
+COMMENT ON COLUMN "order".customer_id IS 'Идентификатор клиента';
+COMMENT ON COLUMN "order".order_date IS 'Дата заказа';
+COMMENT ON COLUMN "order".quantity IS 'Количество заказанного продукта';
+COMMENT ON COLUMN "order".status_id IS 'Идентификатор статуса заказа';
+
+-- Создание индексов
+CREATE INDEX IF NOT EXISTS idx_order_product_id ON "order" (product_id);
+CREATE INDEX IF NOT EXISTS idx_order_customer_id ON "order" (customer_id);
+CREATE INDEX IF NOT EXISTS idx_order_status_id ON "order" (status_id);
+CREATE INDEX IF NOT EXISTS idx_order_order_date ON "order" (order_date);
